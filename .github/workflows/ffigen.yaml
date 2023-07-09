@@ -1,0 +1,26 @@
+name: ffigen
+on:
+  push:
+    paths:
+      - src/llama.cpp
+      - ffigen.yaml
+      - pubspec.yaml
+
+jobs:
+  ffigen:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          cache: true
+          channel: stable
+          architecture: x64
+      - run: dart run ffigen
+      - name: Commit update
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: regen ffi bindings"
+          file_pattern: lib/flutter_llama_bindings_generated.dart
