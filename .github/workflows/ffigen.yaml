@@ -2,6 +2,7 @@ name: ffigen
 on:
   push:
     paths:
+      - .github/workflows/ffigen.yaml
       - src/llama.cpp
       - ffigen.yaml
       - pubspec.yaml
@@ -18,7 +19,7 @@ jobs:
           cache: true
           channel: stable
           architecture: x64
-      - run: dart run ffigen
+      - run: flutter pub run ffigen --config ffigen.yaml
       - name: Commit update
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
