@@ -19,6 +19,7 @@ jobs:
           cache: true
           channel: stable
           architecture: x64
+      - run: flutter pub get
       - run: flutter pub run ffigen --config ffigen.yaml
       - name: Commit update
         uses: stefanzweifel/git-auto-commit-action@v4
