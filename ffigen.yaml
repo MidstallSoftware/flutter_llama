@@ -20,3 +20,14 @@ comments:
 functions:
   rename:
     'llama_(.*)': '$1'
+structs:
+  rename:
+    'llama_(.*)': '$1'
+enums:
+  rename:
+    'llama_(.*)': '$1'
+  member-rename:
+    'LLAMA_(.*)': '$1'
+typedefs:
+  rename:
+    'llama_(.*)': '$1'
