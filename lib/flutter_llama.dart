@@ -6,7 +6,7 @@ import 'flutter_llama_bindings_generated.dart';
 
 const String _libName = 'flutter_llama';
 
-final DynamicLibrary dylib = () {
+final DynamicLibrary _dylib = () {
   final libdir = path.join(path.dirname(Platform.resolvedExecutable), 'lib');
   if (Platform.isMacOS || Platform.isIOS) {
     return DynamicLibrary.open('$_libName.framework/$_libName');
@@ -20,4 +20,4 @@ final DynamicLibrary dylib = () {
   throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
 }();
 
-final FlutterLlamaBindings _bindings = FlutterLlamaBindings(dylib);
+final FlutterLlamaBindings llama = FlutterLlamaBindings(_dylib);

@@ -17,3 +17,6 @@ preamble: |
 comments:
   style: any
   length: full
+functions:
+  rename:
+    'llama_(.*)': '$1'

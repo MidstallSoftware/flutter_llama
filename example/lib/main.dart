@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:flutter_llama/flutter_llama.dart' as flutter_llama;
+import 'package:flutter_llama/flutter_llama.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     const textStyle = TextStyle(fontSize: 25);
     const spacerSmall = SizedBox(height: 10);
-    print(flutter_llama.dylib);
+    print(llama);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
