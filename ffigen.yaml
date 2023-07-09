@@ -27,7 +27,8 @@ enums:
   rename:
     'llama_(.*)': '$1'
   member-rename:
-    'LLAMA_(.*)': '$1'
+    '(.*)':
+      'LLAMA_(.*)': '$1'
 typedefs:
   rename:
     'llama_(.*)': '$1'
