@@ -32,6 +32,9 @@ enums:
 typedefs:
   rename:
     'llama_(.*)': '$1'
+macros:
+  rename:
+    'LLAMA_(.*)': '$1'
 globals:
   rename:
     'LLAMA_(.*)': '$1'
