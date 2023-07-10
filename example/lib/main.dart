@@ -1,6 +1,9 @@
+import 'dart:ffi';
+import 'dart:io';
+import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:flutter_llama/flutter_llama.dart';
+import 'package:path/path.dart' as path;
 
 void main() {
   runApp(const MyApp());
@@ -14,24 +17,34 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  LlamaContext? _llama;
+
+  @override
+  void initState() {
+    super.initState();
+
+    LlamaContext.fromFile('${path.dirname(Platform.resolvedExecutable)}/data/flutter_assets/assets/models/selfee-13b.ggmlv3.q2_K.bin').then((value) => setState(() {
+      _llama = value;
+    }));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    if (_llama != null) _llama!.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    const textStyle = TextStyle(fontSize: 25);
-    const spacerSmall = SizedBox(height: 10);
-    print(llama);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Native Packages'),
+          title: const Text('flutter_llama example'),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: [
-              ],
-            ),
-          ),
+        body: Center(
+          child: _llama == null ? const CircularProgressIndicator()
+            : Container(),
         ),
       ),
     );
