@@ -14,7 +14,10 @@ dependencies:
     path: ../
 
   cupertino_icons: ^1.0.2
-  ffi: ^2.0.2
+  network_file_cached: ^0.0.7
+  hive_flutter: ^1.1.0
+  path_provider: ^2.0.15
+  xdg_directories: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -23,5 +26,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/models/

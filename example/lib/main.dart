@@ -1,11 +1,25 @@
-import 'dart:ffi';
 import 'dart:io';
-import 'package:ffi/ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_llama/flutter_llama.dart';
-import 'package:path/path.dart' as path;
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:network_file_cached/network_file_cached.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:xdg_directories/xdg_directories.dart' as xdg;
 
-void main() {
+void main() async {
+  switch (defaultTargetPlatform) {
+    case TargetPlatform.linux:
+      final dir = Directory('${xdg.cacheHome.path}/com.expidusos.flutter_llama_example');
+      if (!dir.existsSync()) await dir.create(recursive: true);
+      await Hive.initFlutter(dir.path);
+      break;
+    default:
+      await Hive.initFlutter((await getApplicationDocumentsDirectory()).path);
+      break;
+  }
+
+  await NetworkFileCached.init();
   runApp(const MyApp());
 }
 
@@ -18,14 +32,27 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   LlamaContext? _llama;
+  String _modelProgressLabel = 'Downloading AI model';
+  double? _modelProgress;
 
   @override
   void initState() {
     super.initState();
 
-    LlamaContext.fromFile('${path.dirname(Platform.resolvedExecutable)}/data/flutter_assets/assets/models/selfee-13b.ggmlv3.q2_K.bin').then((value) => setState(() {
-      _llama = value;
-    }));
+    NetworkFileCached.downloadFile(
+      'https://huggingface.co/TheBloke/Selfee-13B-GGML/resolve/main/selfee-13b.ggmlv3.q2_K.bin',
+      onReceiveProgress: (rcv, total) => setState(() {
+        _modelProgress = rcv / total;
+      })
+    ).then((file) {
+      setState(() {
+        _modelProgressLabel = 'Initializing AI';
+        _modelProgress = null;
+        LlamaContext.fromFile(file.path).then((value) => setState(() {
+          _llama = value;
+        }));
+      });
+    });
   }
 
   @override
@@ -43,8 +70,14 @@ class _MyAppState extends State<MyApp> {
           title: const Text('flutter_llama example'),
         ),
         body: Center(
-          child: _llama == null ? const CircularProgressIndicator()
-            : Container(),
+          child: _llama == null
+            ? Column(
+                children: [
+                  Text(_modelProgressLabel),
+                  CircularProgressIndicator(value: _modelProgress)
+                ],
+              )
+           : Container(),
         ),
       ),
     );
