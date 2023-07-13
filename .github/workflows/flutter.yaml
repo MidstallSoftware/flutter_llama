@@ -56,6 +56,10 @@ jobs:
           flutter config --enable-${{ matrix.target }}-desktop
           cd example
           flutter build ${{ matrix.target }}
+      - if: ${{ matrix.target == 'macos' }}
+        name: Dump output
+        run: |
+          find example/build
       - if: ${{ matrix.target == 'android' }}
         name: Build for Android
         run: |
