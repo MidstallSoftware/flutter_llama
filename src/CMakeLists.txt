@@ -6,5 +6,3 @@ set(BUILD_SHARED_LIBS ON)
 add_subdirectory(llama.cpp)
 add_library(flutter_llama ALIAS llama)
 set_target_properties(llama PROPERTIES OUTPUT_NAME flutter_llama)
-install(TARGETS llama
-  DESTINATION "lib")
