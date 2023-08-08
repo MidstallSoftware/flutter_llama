@@ -10,6 +10,7 @@ llama.cpp bindings for Flutter
   s.author = { 'Midstall Software' => 'inquire@midstall.com' }
   s.source = { :path => '.' }
   s.source_files = 'Classes/**/*'
+  s.public_header_files = 'Headers/**/*'
   s.framework = 'Accelerate'
   s.ios.dependency 'Flutter'
   s.osx.dependency 'FlutterMacOS'
