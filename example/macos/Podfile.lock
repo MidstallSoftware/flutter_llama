@@ -1,5 +1,6 @@
 PODS:
-  - flutter_llama (0.0.1)
+  - flutter_llama (0.0.1):
+    - FlutterMacOS
   - FlutterMacOS (1.0.0)
   - path_provider_foundation (0.0.1):
     - Flutter
@@ -19,7 +20,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
 
 SPEC CHECKSUMS:
-  flutter_llama: e7d7e68332e71f940b7e039240a9689a3f8395e9
+  flutter_llama: 9068500bf59c2365ce7bdf44432a81a450fdf398
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
 

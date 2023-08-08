@@ -8,9 +8,11 @@ llama.cpp bindings for Flutter
   s.homepage = 'https://github.com/ExpidusOS/flutter_llama'
   s.license = { :file => '../LICENSE' }
   s.author = { 'Midstall Software' => 'inquire@midstall.com' }
-  s.source = { :path => '../src/llama.cpp' }
-  s.source_files = '{ggml.c,llama.cpp}'
-  s.public_header_files = 'llama.h'
+  s.source = { :path => '.' }
+  s.source_files = 'Classes/**/*'
   s.framework = 'Accelerate'
-  s.macos.deployment_target = '10.10'
+  s.dependency 'FlutterMacOS'
+  s.platform = :osx, '10.13'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
+  s.swift_version = '5.0'
 end
