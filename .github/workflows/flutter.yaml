@@ -45,6 +45,15 @@ jobs:
       - if: ${{ matrix.target == 'android' }}
         name: Setup Android SDK
         uses: android-actions/setup-android@v2
+      - if: ${{ matrix.target == 'android' }}
+        name: Install NDK r26
+        run: |
+          sudo curl -L "https://dl.google.com/android/repository/android-ndk-r26-rc1-linux.zip" -o $ANDROID_SDK_ROOT/ndk/android.zip
+          pushd $ANDROID_SDK_ROOT/ndk
+          sudo unzip android.zip
+          sudo mv android-ndk-r26-beta2 26.0.10636728
+          sudo rm android.zip
+          popd
       - if: ${{ matrix.target == 'linux' }}
         name: Install host dependencies
         run: |
@@ -66,7 +75,6 @@ jobs:
       - if: ${{ matrix.target == 'android' }}
         name: Build for Android
         run: |
-          sdkmanager "ndk;26.0.10636728"
           cd example
           flutter build apk
           flutter build appbundle
