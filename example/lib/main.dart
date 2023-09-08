@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:xdg_directories/xdg_directories.dart' as xdg;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   switch (defaultTargetPlatform) {
     case TargetPlatform.linux:
       final dir = Directory('${xdg.cacheHome.path}/com.expidusos.flutter_llama_example');

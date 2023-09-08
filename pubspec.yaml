@@ -43,6 +43,10 @@ flutter:
         ffiPlugin: true
       linux:
         ffiPlugin: true
+      macos:
+        ffiPlugin: true
+      ios:
+        ffiPlugin: true
       windows:
         ffiPlugin: true
 

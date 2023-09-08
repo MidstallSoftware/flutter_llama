@@ -1,0 +1,1 @@
+../darwin/flutter_llama.podspec
