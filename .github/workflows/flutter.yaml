@@ -66,6 +66,7 @@ jobs:
       - if: ${{ matrix.target == 'android' }}
         name: Build for Android
         run: |
+          sdkmanager "ndk;23.1.7779620"
           cd example
           flutter build apk
           flutter build appbundle
