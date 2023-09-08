@@ -36,8 +36,8 @@ class LlamaContext {
 
   static Future<LlamaContext> fromFile(String path) async {
     final ptr = await Isolate.run(() {
-      _llama.init_backend(true);
-      final value = _llama.init_from_file(path.toNativeUtf8().cast(), _llama.context_default_params());
+      _llama.backend_init(true);
+      final value = _llama.load_model_from_file(path.toNativeUtf8().cast(), _llama.context_default_params());
       if (value == nullptr) {
         throw Exception('Failed to initialize model');
       }
