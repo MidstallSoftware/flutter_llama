@@ -47,47 +47,30 @@ class FlutterLlamaBindings {
   late final _model_quantize_default_params = _model_quantize_default_paramsPtr
       .asFunction<model_quantize_params Function()>();
 
-  bool mmap_supported() {
-    return _mmap_supported();
-  }
-
-  late final _mmap_supportedPtr =
-      _lookup<ffi.NativeFunction<ffi.Bool Function()>>('llama_mmap_supported');
-  late final _mmap_supported = _mmap_supportedPtr.asFunction<bool Function()>();
-
-  bool mlock_supported() {
-    return _mlock_supported();
-  }
-
-  late final _mlock_supportedPtr =
-      _lookup<ffi.NativeFunction<ffi.Bool Function()>>('llama_mlock_supported');
-  late final _mlock_supported =
-      _mlock_supportedPtr.asFunction<bool Function()>();
-
-  /// TODO: not great API - very likely to change
   /// Initialize the llama + ggml backend
   /// If numa is true, use NUMA optimizations
   /// Call once at the start of the program
-  void init_backend(
+  void backend_init(
     bool numa,
   ) {
-    return _init_backend(
+    return _backend_init(
       numa,
     );
   }
 
-  late final _init_backendPtr =
+  late final _backend_initPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Bool)>>(
-          'llama_init_backend');
-  late final _init_backend = _init_backendPtr.asFunction<void Function(bool)>();
+          'llama_backend_init');
+  late final _backend_init = _backend_initPtr.asFunction<void Function(bool)>();
 
-  int time_us() {
-    return _time_us();
+  /// Call once at the end of the program - currently only used for MPI
+  void backend_free() {
+    return _backend_free();
   }
 
-  late final _time_usPtr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function()>>('llama_time_us');
-  late final _time_us = _time_usPtr.asFunction<int Function()>();
+  late final _backend_freePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>('llama_backend_free');
+  late final _backend_free = _backend_freePtr.asFunction<void Function()>();
 
   ffi.Pointer<model> load_model_from_file(
     ffi.Pointer<ffi.Char> path_model,
@@ -137,23 +120,6 @@ class FlutterLlamaBindings {
   late final _new_context_with_model = _new_context_with_modelPtr.asFunction<
       ffi.Pointer<context> Function(ffi.Pointer<model>, context_params)>();
 
-  ffi.Pointer<context> init_from_file(
-    ffi.Pointer<ffi.Char> path_model,
-    context_params params,
-  ) {
-    return _init_from_file(
-      path_model,
-      params,
-    );
-  }
-
-  late final _init_from_filePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<context> Function(
-              ffi.Pointer<ffi.Char>, context_params)>>('llama_init_from_file');
-  late final _init_from_file = _init_from_filePtr.asFunction<
-      ffi.Pointer<context> Function(ffi.Pointer<ffi.Char>, context_params)>();
-
   /// Frees all allocated memory
   void free(
     ffi.Pointer<context> ctx,
@@ -167,6 +133,215 @@ class FlutterLlamaBindings {
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<context>)>>(
           'llama_free');
   late final _free = _freePtr.asFunction<void Function(ffi.Pointer<context>)>();
+
+  int time_us() {
+    return _time_us();
+  }
+
+  late final _time_usPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function()>>('llama_time_us');
+  late final _time_us = _time_usPtr.asFunction<int Function()>();
+
+  int max_devices() {
+    return _max_devices();
+  }
+
+  late final _max_devicesPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('llama_max_devices');
+  late final _max_devices = _max_devicesPtr.asFunction<int Function()>();
+
+  bool mmap_supported() {
+    return _mmap_supported();
+  }
+
+  late final _mmap_supportedPtr =
+      _lookup<ffi.NativeFunction<ffi.Bool Function()>>('llama_mmap_supported');
+  late final _mmap_supported = _mmap_supportedPtr.asFunction<bool Function()>();
+
+  bool mlock_supported() {
+    return _mlock_supported();
+  }
+
+  late final _mlock_supportedPtr =
+      _lookup<ffi.NativeFunction<ffi.Bool Function()>>('llama_mlock_supported');
+  late final _mlock_supported =
+      _mlock_supportedPtr.asFunction<bool Function()>();
+
+  int n_vocab(
+    ffi.Pointer<context> ctx,
+  ) {
+    return _n_vocab(
+      ctx,
+    );
+  }
+
+  late final _n_vocabPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<context>)>>(
+          'llama_n_vocab');
+  late final _n_vocab =
+      _n_vocabPtr.asFunction<int Function(ffi.Pointer<context>)>();
+
+  int n_ctx(
+    ffi.Pointer<context> ctx,
+  ) {
+    return _n_ctx(
+      ctx,
+    );
+  }
+
+  late final _n_ctxPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<context>)>>(
+          'llama_n_ctx');
+  late final _n_ctx =
+      _n_ctxPtr.asFunction<int Function(ffi.Pointer<context>)>();
+
+  int n_ctx_train(
+    ffi.Pointer<context> ctx,
+  ) {
+    return _n_ctx_train(
+      ctx,
+    );
+  }
+
+  late final _n_ctx_trainPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<context>)>>(
+          'llama_n_ctx_train');
+  late final _n_ctx_train =
+      _n_ctx_trainPtr.asFunction<int Function(ffi.Pointer<context>)>();
+
+  int n_embd(
+    ffi.Pointer<context> ctx,
+  ) {
+    return _n_embd(
+      ctx,
+    );
+  }
+
+  late final _n_embdPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<context>)>>(
+          'llama_n_embd');
+  late final _n_embd =
+      _n_embdPtr.asFunction<int Function(ffi.Pointer<context>)>();
+
+  int vocab_type1(
+    ffi.Pointer<context> ctx,
+  ) {
+    return _vocab_type1(
+      ctx,
+    );
+  }
+
+  late final _vocab_type1Ptr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<context>)>>(
+          'llama_vocab_type');
+  late final _vocab_type1 =
+      _vocab_type1Ptr.asFunction<int Function(ffi.Pointer<context>)>();
+
+  int model_n_vocab(
+    ffi.Pointer<model> model,
+  ) {
+    return _model_n_vocab(
+      model,
+    );
+  }
+
+  late final _model_n_vocabPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<model>)>>(
+          'llama_model_n_vocab');
+  late final _model_n_vocab =
+      _model_n_vocabPtr.asFunction<int Function(ffi.Pointer<model>)>();
+
+  int model_n_ctx(
+    ffi.Pointer<model> model,
+  ) {
+    return _model_n_ctx(
+      model,
+    );
+  }
+
+  late final _model_n_ctxPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<model>)>>(
+          'llama_model_n_ctx');
+  late final _model_n_ctx =
+      _model_n_ctxPtr.asFunction<int Function(ffi.Pointer<model>)>();
+
+  int model_n_ctx_train(
+    ffi.Pointer<model> model,
+  ) {
+    return _model_n_ctx_train(
+      model,
+    );
+  }
+
+  late final _model_n_ctx_trainPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<model>)>>(
+          'llama_model_n_ctx_train');
+  late final _model_n_ctx_train =
+      _model_n_ctx_trainPtr.asFunction<int Function(ffi.Pointer<model>)>();
+
+  int model_n_embd(
+    ffi.Pointer<model> model,
+  ) {
+    return _model_n_embd(
+      model,
+    );
+  }
+
+  late final _model_n_embdPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<model>)>>(
+          'llama_model_n_embd');
+  late final _model_n_embd =
+      _model_n_embdPtr.asFunction<int Function(ffi.Pointer<model>)>();
+
+  /// Get a string describing the model type
+  int model_desc(
+    ffi.Pointer<model> model,
+    ffi.Pointer<ffi.Char> buf,
+    int buf_size,
+  ) {
+    return _model_desc(
+      model,
+      buf,
+      buf_size,
+    );
+  }
+
+  late final _model_descPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<model>, ffi.Pointer<ffi.Char>,
+              ffi.Size)>>('llama_model_desc');
+  late final _model_desc = _model_descPtr.asFunction<
+      int Function(ffi.Pointer<model>, ffi.Pointer<ffi.Char>, int)>();
+
+  /// Returns the total size of all the tensors in the model in bytes
+  int model_size(
+    ffi.Pointer<model> model,
+  ) {
+    return _model_size(
+      model,
+    );
+  }
+
+  late final _model_sizePtr =
+      _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.Pointer<model>)>>(
+          'llama_model_size');
+  late final _model_size =
+      _model_sizePtr.asFunction<int Function(ffi.Pointer<model>)>();
+
+  /// Returns the total number of parameters in the model
+  int model_n_params(
+    ffi.Pointer<model> model,
+  ) {
+    return _model_n_params(
+      model,
+    );
+  }
+
+  late final _model_n_paramsPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.Pointer<model>)>>(
+          'llama_model_n_params');
+  late final _model_n_params =
+      _model_n_paramsPtr.asFunction<int Function(ffi.Pointer<model>)>();
 
   /// Returns 0 on success
   int model_quantize(
@@ -264,9 +439,9 @@ class FlutterLlamaBindings {
   }
 
   late final _set_rng_seedPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<context>, ffi.Uint32)>>('llama_set_rng_seed');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<context>, ffi.Uint32)>>(
+      'llama_set_rng_seed');
   late final _set_rng_seed =
       _set_rng_seedPtr.asFunction<void Function(ffi.Pointer<context>, int)>();
 
@@ -449,104 +624,6 @@ class FlutterLlamaBindings {
   late final _eval_export = _eval_exportPtr
       .asFunction<int Function(ffi.Pointer<context>, ffi.Pointer<ffi.Char>)>();
 
-  /// Convert the provided text into tokens.
-  /// The tokens pointer must be large enough to hold the resulting tokens.
-  /// Returns the number of tokens on success, no more than n_max_tokens
-  /// Returns a negative number on failure - the number of tokens that would have been returned
-  /// TODO: not sure if correct
-  int tokenize(
-    ffi.Pointer<context> ctx,
-    ffi.Pointer<ffi.Char> text,
-    ffi.Pointer<token> tokens,
-    int n_max_tokens,
-    bool add_bos,
-  ) {
-    return _tokenize(
-      ctx,
-      text,
-      tokens,
-      n_max_tokens,
-      add_bos,
-    );
-  }
-
-  late final _tokenizePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(ffi.Pointer<context>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<token>, ffi.Int, ffi.Bool)>>('llama_tokenize');
-  late final _tokenize = _tokenizePtr.asFunction<
-      int Function(ffi.Pointer<context>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<token>, int, bool)>();
-
-  int n_vocab(
-    ffi.Pointer<context> ctx,
-  ) {
-    return _n_vocab(
-      ctx,
-    );
-  }
-
-  late final _n_vocabPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<context>)>>(
-          'llama_n_vocab');
-  late final _n_vocab =
-      _n_vocabPtr.asFunction<int Function(ffi.Pointer<context>)>();
-
-  int n_ctx(
-    ffi.Pointer<context> ctx,
-  ) {
-    return _n_ctx(
-      ctx,
-    );
-  }
-
-  late final _n_ctxPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<context>)>>(
-          'llama_n_ctx');
-  late final _n_ctx =
-      _n_ctxPtr.asFunction<int Function(ffi.Pointer<context>)>();
-
-  int n_embd(
-    ffi.Pointer<context> ctx,
-  ) {
-    return _n_embd(
-      ctx,
-    );
-  }
-
-  late final _n_embdPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<context>)>>(
-          'llama_n_embd');
-  late final _n_embd =
-      _n_embdPtr.asFunction<int Function(ffi.Pointer<context>)>();
-
-  /// Get the vocabulary as output parameters.
-  /// Returns number of results.
-  int get_vocab(
-    ffi.Pointer<context> ctx,
-    ffi.Pointer<ffi.Pointer<ffi.Char>> strings,
-    ffi.Pointer<ffi.Float> scores,
-    int capacity,
-  ) {
-    return _get_vocab(
-      ctx,
-      strings,
-      scores,
-      capacity,
-    );
-  }
-
-  late final _get_vocabPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(
-              ffi.Pointer<context>,
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Float>,
-              ffi.Int)>>('llama_get_vocab');
-  late final _get_vocab = _get_vocabPtr.asFunction<
-      int Function(ffi.Pointer<context>, ffi.Pointer<ffi.Pointer<ffi.Char>>,
-          ffi.Pointer<ffi.Float>, int)>();
-
   /// Token logits obtained from the last call to llama_eval()
   /// The logits for the last token are stored in the last row
   /// Can be mutated in order to change the probabilities of the next token
@@ -584,48 +661,253 @@ class FlutterLlamaBindings {
   late final _get_embeddings = _get_embeddingsPtr
       .asFunction<ffi.Pointer<ffi.Float> Function(ffi.Pointer<context>)>();
 
-  /// Token Id -> String. Uses the vocabulary in the provided context
-  ffi.Pointer<ffi.Char> token_to_str(
+  /// Vocab
+  ffi.Pointer<ffi.Char> token_get_text(
     ffi.Pointer<context> ctx,
     int token,
   ) {
-    return _token_to_str(
+    return _token_get_text(
       ctx,
       token,
     );
   }
 
-  late final _token_to_strPtr = _lookup<
+  late final _token_get_textPtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<context>, token)>>('llama_token_to_str');
-  late final _token_to_str = _token_to_strPtr
+              ffi.Pointer<context>, token)>>('llama_token_get_text');
+  late final _token_get_text = _token_get_textPtr
       .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<context>, int)>();
 
+  double token_get_score(
+    ffi.Pointer<context> ctx,
+    int token,
+  ) {
+    return _token_get_score(
+      ctx,
+      token,
+    );
+  }
+
+  late final _token_get_scorePtr = _lookup<
+          ffi.NativeFunction<ffi.Float Function(ffi.Pointer<context>, token)>>(
+      'llama_token_get_score');
+  late final _token_get_score = _token_get_scorePtr
+      .asFunction<double Function(ffi.Pointer<context>, int)>();
+
+  int token_get_type(
+    ffi.Pointer<context> ctx,
+    int token,
+  ) {
+    return _token_get_type(
+      ctx,
+      token,
+    );
+  }
+
+  late final _token_get_typePtr = _lookup<
+          ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<context>, token)>>(
+      'llama_token_get_type');
+  late final _token_get_type =
+      _token_get_typePtr.asFunction<int Function(ffi.Pointer<context>, int)>();
+
   /// Special tokens
-  int token_bos() {
-    return _token_bos();
+  int token_bos(
+    ffi.Pointer<context> ctx,
+  ) {
+    return _token_bos(
+      ctx,
+    );
   }
 
   late final _token_bosPtr =
-      _lookup<ffi.NativeFunction<token Function()>>('llama_token_bos');
-  late final _token_bos = _token_bosPtr.asFunction<int Function()>();
+      _lookup<ffi.NativeFunction<token Function(ffi.Pointer<context>)>>(
+          'llama_token_bos');
+  late final _token_bos =
+      _token_bosPtr.asFunction<int Function(ffi.Pointer<context>)>();
 
-  int token_eos() {
-    return _token_eos();
+  int token_eos(
+    ffi.Pointer<context> ctx,
+  ) {
+    return _token_eos(
+      ctx,
+    );
   }
 
   late final _token_eosPtr =
-      _lookup<ffi.NativeFunction<token Function()>>('llama_token_eos');
-  late final _token_eos = _token_eosPtr.asFunction<int Function()>();
+      _lookup<ffi.NativeFunction<token Function(ffi.Pointer<context>)>>(
+          'llama_token_eos');
+  late final _token_eos =
+      _token_eosPtr.asFunction<int Function(ffi.Pointer<context>)>();
 
-  int token_nl() {
-    return _token_nl();
+  int token_nl(
+    ffi.Pointer<context> ctx,
+  ) {
+    return _token_nl(
+      ctx,
+    );
   }
 
   late final _token_nlPtr =
-      _lookup<ffi.NativeFunction<token Function()>>('llama_token_nl');
-  late final _token_nl = _token_nlPtr.asFunction<int Function()>();
+      _lookup<ffi.NativeFunction<token Function(ffi.Pointer<context>)>>(
+          'llama_token_nl');
+  late final _token_nl =
+      _token_nlPtr.asFunction<int Function(ffi.Pointer<context>)>();
+
+  /// Convert the provided text into tokens.
+  /// The tokens pointer must be large enough to hold the resulting tokens.
+  /// Returns the number of tokens on success, no more than n_max_tokens
+  /// Returns a negative number on failure - the number of tokens that would have been returned
+  int tokenize(
+    ffi.Pointer<context> ctx,
+    ffi.Pointer<ffi.Char> text,
+    ffi.Pointer<token> tokens,
+    int n_max_tokens,
+    bool add_bos,
+  ) {
+    return _tokenize(
+      ctx,
+      text,
+      tokens,
+      n_max_tokens,
+      add_bos,
+    );
+  }
+
+  late final _tokenizePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<context>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<token>, ffi.Int, ffi.Bool)>>('llama_tokenize');
+  late final _tokenize = _tokenizePtr.asFunction<
+      int Function(ffi.Pointer<context>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<token>, int, bool)>();
+
+  int tokenize_with_model(
+    ffi.Pointer<model> model,
+    ffi.Pointer<ffi.Char> text,
+    ffi.Pointer<token> tokens,
+    int n_max_tokens,
+    bool add_bos,
+  ) {
+    return _tokenize_with_model(
+      model,
+      text,
+      tokens,
+      n_max_tokens,
+      add_bos,
+    );
+  }
+
+  late final _tokenize_with_modelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(
+              ffi.Pointer<model>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<token>,
+              ffi.Int,
+              ffi.Bool)>>('llama_tokenize_with_model');
+  late final _tokenize_with_model = _tokenize_with_modelPtr.asFunction<
+      int Function(ffi.Pointer<model>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<token>, int, bool)>();
+
+  /// Token Id -> Piece.
+  /// Uses the vocabulary in the provided context.
+  /// Does not write null terminator to the buffer.
+  /// User code is responsible to remove the leading whitespace of the first non-BOS token when decoding multiple tokens.
+  int token_to_piece(
+    ffi.Pointer<context> ctx,
+    int token,
+    ffi.Pointer<ffi.Char> buf,
+    int length,
+  ) {
+    return _token_to_piece(
+      ctx,
+      token,
+      buf,
+      length,
+    );
+  }
+
+  late final _token_to_piecePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<context>, token, ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('llama_token_to_piece');
+  late final _token_to_piece = _token_to_piecePtr.asFunction<
+      int Function(ffi.Pointer<context>, int, ffi.Pointer<ffi.Char>, int)>();
+
+  int token_to_piece_with_model(
+    ffi.Pointer<model> model,
+    int token,
+    ffi.Pointer<ffi.Char> buf,
+    int length,
+  ) {
+    return _token_to_piece_with_model(
+      model,
+      token,
+      buf,
+      length,
+    );
+  }
+
+  late final _token_to_piece_with_modelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<model>, token, ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('llama_token_to_piece_with_model');
+  late final _token_to_piece_with_model =
+      _token_to_piece_with_modelPtr.asFunction<
+          int Function(ffi.Pointer<model>, int, ffi.Pointer<ffi.Char>, int)>();
+
+  /// Grammar
+  ffi.Pointer<grammar> grammar_init(
+    ffi.Pointer<ffi.Pointer<grammar_element>> rules,
+    int n_rules,
+    int start_rule_index,
+  ) {
+    return _grammar_init(
+      rules,
+      n_rules,
+      start_rule_index,
+    );
+  }
+
+  late final _grammar_initPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<grammar> Function(
+              ffi.Pointer<ffi.Pointer<grammar_element>>,
+              ffi.Size,
+              ffi.Size)>>('llama_grammar_init');
+  late final _grammar_init = _grammar_initPtr.asFunction<
+      ffi.Pointer<grammar> Function(
+          ffi.Pointer<ffi.Pointer<grammar_element>>, int, int)>();
+
+  void grammar_free(
+    ffi.Pointer<grammar> grammar,
+  ) {
+    return _grammar_free(
+      grammar,
+    );
+  }
+
+  late final _grammar_freePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<grammar>)>>(
+          'llama_grammar_free');
+  late final _grammar_free =
+      _grammar_freePtr.asFunction<void Function(ffi.Pointer<grammar>)>();
+
+  ffi.Pointer<grammar> grammar_copy(
+    ffi.Pointer<grammar> grammar,
+  ) {
+    return _grammar_copy(
+      grammar,
+    );
+  }
+
+  late final _grammar_copyPtr = _lookup<
+          ffi
+          .NativeFunction<ffi.Pointer<grammar> Function(ffi.Pointer<grammar>)>>(
+      'llama_grammar_copy');
+  late final _grammar_copy = _grammar_copyPtr
+      .asFunction<ffi.Pointer<grammar> Function(ffi.Pointer<grammar>)>();
 
   /// @details Repetition penalty described in CTRL academic paper https://arxiv.org/abs/1909.05858, with negative logit fix.
   void sample_repetition_penalty(
@@ -689,6 +971,36 @@ class FlutterLlamaBindings {
       _sample_frequency_and_presence_penaltiesPtr.asFunction<
           void Function(ffi.Pointer<context>, ffi.Pointer<token_data_array>,
               ffi.Pointer<token>, int, double, double)>();
+
+  /// @details Apply classifier-free guidance to the logits as described in academic paper "Stay on topic with Classifier-Free Guidance" https://arxiv.org/abs/2306.17806
+  /// @param candidates A vector of `llama_token_data` containing the candidate tokens, the logits must be directly extracted from the original generation context without being sorted.
+  /// @params guidance_ctx A separate context from the same model. Other than a negative prompt at the beginning, it should have all generated and user input tokens copied from the main context.
+  /// @params scale Guidance strength. 1.0f means no guidance. Higher values mean stronger guidance.
+  void sample_classifier_free_guidance(
+    ffi.Pointer<context> ctx,
+    ffi.Pointer<token_data_array> candidates,
+    ffi.Pointer<context> guidance_ctx,
+    double scale,
+  ) {
+    return _sample_classifier_free_guidance(
+      ctx,
+      candidates,
+      guidance_ctx,
+      scale,
+    );
+  }
+
+  late final _sample_classifier_free_guidancePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<context>,
+              ffi.Pointer<token_data_array>,
+              ffi.Pointer<context>,
+              ffi.Float)>>('llama_sample_classifier_free_guidance');
+  late final _sample_classifier_free_guidance =
+      _sample_classifier_free_guidancePtr.asFunction<
+          void Function(ffi.Pointer<context>, ffi.Pointer<token_data_array>,
+              ffi.Pointer<context>, double)>();
 
   /// @details Sorts candidate tokens by their logits in descending order and calculate probabilities based on logits.
   void sample_softmax(
@@ -820,6 +1132,27 @@ class FlutterLlamaBindings {
       void Function(
           ffi.Pointer<context>, ffi.Pointer<token_data_array>, double)>();
 
+  /// @details Apply constraints from grammar
+  void sample_grammar(
+    ffi.Pointer<context> ctx,
+    ffi.Pointer<token_data_array> candidates,
+    ffi.Pointer<grammar> grammar,
+  ) {
+    return _sample_grammar(
+      ctx,
+      candidates,
+      grammar,
+    );
+  }
+
+  late final _sample_grammarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<context>, ffi.Pointer<token_data_array>,
+              ffi.Pointer<grammar>)>>('llama_sample_grammar');
+  late final _sample_grammar = _sample_grammarPtr.asFunction<
+      void Function(ffi.Pointer<context>, ffi.Pointer<token_data_array>,
+          ffi.Pointer<grammar>)>();
+
   /// @details Mirostat 1.0 algorithm described in the paper https://arxiv.org/abs/2007.14966. Uses tokens instead of words.
   /// @param candidates A vector of `llama_token_data` containing the candidate tokens, their probabilities (p), and log-odds (logit) for the current position in the generated text.
   /// @param tau  The target cross-entropy (or surprise) value you want to achieve for the generated text. A higher value corresponds to more surprising or less predictable text, while a lower value corresponds to less surprising or more predictable text.
@@ -927,6 +1260,68 @@ class FlutterLlamaBindings {
   late final _sample_token = _sample_tokenPtr.asFunction<
       int Function(ffi.Pointer<context>, ffi.Pointer<token_data_array>)>();
 
+  /// @details Accepts the sampled token into the grammar
+  void grammar_accept_token(
+    ffi.Pointer<context> ctx,
+    ffi.Pointer<grammar> grammar,
+    int token,
+  ) {
+    return _grammar_accept_token(
+      ctx,
+      grammar,
+      token,
+    );
+  }
+
+  late final _grammar_accept_tokenPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<context>, ffi.Pointer<grammar>,
+              token)>>('llama_grammar_accept_token');
+  late final _grammar_accept_token = _grammar_accept_tokenPtr.asFunction<
+      void Function(ffi.Pointer<context>, ffi.Pointer<grammar>, int)>();
+
+  /// @details Deterministically returns entire sentence constructed by a beam search.
+  /// @param ctx Pointer to the llama_context.
+  /// @param callback Invoked for each iteration of the beam_search loop, passing in beams_state.
+  /// @param callback_data A pointer that is simply passed back to callback.
+  /// @param n_beams Number of beams to use.
+  /// @param n_past Number of tokens already evaluated.
+  /// @param n_predict Maximum number of tokens to predict. EOS may occur earlier.
+  /// @param n_threads Number of threads as passed to llama_eval().
+  void beam_search(
+    ffi.Pointer<context> ctx,
+    beam_search_callback_fn_t callback,
+    ffi.Pointer<ffi.Void> callback_data,
+    int n_beams,
+    int n_past,
+    int n_predict,
+    int n_threads,
+  ) {
+    return _beam_search(
+      ctx,
+      callback,
+      callback_data,
+      n_beams,
+      n_past,
+      n_predict,
+      n_threads,
+    );
+  }
+
+  late final _beam_searchPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<context>,
+              beam_search_callback_fn_t,
+              ffi.Pointer<ffi.Void>,
+              ffi.Size,
+              ffi.Int,
+              ffi.Int,
+              ffi.Int)>>('llama_beam_search');
+  late final _beam_search = _beam_searchPtr.asFunction<
+      void Function(ffi.Pointer<context>, beam_search_callback_fn_t,
+          ffi.Pointer<ffi.Void>, int, int, int, int)>();
+
   /// Performance information
   timings get_timings(
     ffi.Pointer<context> ctx,
@@ -980,6 +1375,42 @@ class FlutterLlamaBindings {
           'llama_print_system_info');
   late final _print_system_info =
       _print_system_infoPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
+
+  /// Set callback for all future logging events.
+  /// If this is not called, or NULL is supplied, everything is output on stderr.
+  void log_set(
+    log_callback log_callback,
+    ffi.Pointer<ffi.Void> user_data,
+  ) {
+    return _log_set(
+      log_callback,
+      user_data,
+    );
+  }
+
+  late final _log_setPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              log_callback, ffi.Pointer<ffi.Void>)>>('llama_log_set');
+  late final _log_set = _log_setPtr
+      .asFunction<void Function(log_callback, ffi.Pointer<ffi.Void>)>();
+
+  void dump_timing_info_yaml(
+    ffi.Pointer<FILE> stream,
+    ffi.Pointer<context> ctx,
+  ) {
+    return _dump_timing_info_yaml(
+      stream,
+      ctx,
+    );
+  }
+
+  late final _dump_timing_info_yamlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<FILE>,
+              ffi.Pointer<context>)>>('llama_dump_timing_info_yaml');
+  late final _dump_timing_info_yaml = _dump_timing_info_yamlPtr
+      .asFunction<void Function(ffi.Pointer<FILE>, ffi.Pointer<context>)>();
 }
 
 /// C interface
@@ -989,94 +1420,29 @@ final class model extends ffi.Opaque {}
 
 final class context extends ffi.Opaque {}
 
-final class token_data extends ffi.Struct {
-  /// token id
-  @token()
-  external int id;
-
-  /// log-odds of the token
-  @ffi.Float()
-  external double logit;
-
-  /// probability of the token
-  @ffi.Float()
-  external double p;
+abstract class log_level {
+  static const int LOG_LEVEL_ERROR = 2;
+  static const int LOG_LEVEL_WARN = 3;
+  static const int LOG_LEVEL_INFO = 4;
 }
 
-typedef token = ffi.Int;
+abstract class vocab_type {
+  /// SentencePiece
+  static const int VOCAB_TYPE_SPM = 0;
 
-final class token_data_array extends ffi.Struct {
-  external ffi.Pointer<token_data> data;
-
-  @ffi.Size()
-  external int size;
-
-  @ffi.Bool()
-  external bool sorted;
+  /// Byte Pair Encoding
+  static const int VOCAB_TYPE_BPE = 1;
 }
 
-final class context_params extends ffi.Struct {
-  /// RNG seed, -1 for random
-  @ffi.Uint32()
-  external int seed;
-
-  /// text context
-  @ffi.Int32()
-  external int n_ctx;
-
-  /// prompt processing batch size
-  @ffi.Int32()
-  external int n_batch;
-
-  /// number of layers to store in VRAM
-  @ffi.Int32()
-  external int n_gpu_layers;
-
-  /// the GPU that is used for scratch and small tensors
-  @ffi.Int32()
-  external int main_gpu;
-
-  @ffi.Array.multi([1])
-  external ffi.Array<ffi.Float> tensor_split;
-
-  /// called with a progress value between 0 and 1, pass NULL to disable
-  external progress_callback progress_callback1;
-
-  /// context pointer passed to the progress callback
-  external ffi.Pointer<ffi.Void> progress_callback_user_data;
-
-  /// if true, reduce VRAM usage at the cost of performance
-  @ffi.Bool()
-  external bool low_vram;
-
-  /// use fp16 for KV cache
-  @ffi.Bool()
-  external bool f16_kv;
-
-  /// the llama_eval() call computes all logits, not just the last one
-  @ffi.Bool()
-  external bool logits_all;
-
-  /// only load the vocabulary, no weights
-  @ffi.Bool()
-  external bool vocab_only;
-
-  /// use mmap if possible
-  @ffi.Bool()
-  external bool use_mmap;
-
-  /// force system to keep model in RAM
-  @ffi.Bool()
-  external bool use_mlock;
-
-  /// embedding mode only
-  @ffi.Bool()
-  external bool embedding;
+abstract class token_type {
+  static const int TOKEN_TYPE_UNDEFINED = 0;
+  static const int TOKEN_TYPE_NORMAL = 1;
+  static const int TOKEN_TYPE_UNKNOWN = 2;
+  static const int TOKEN_TYPE_CONTROL = 3;
+  static const int TOKEN_TYPE_USER_DEFINED = 4;
+  static const int TOKEN_TYPE_UNUSED = 5;
+  static const int TOKEN_TYPE_BYTE = 6;
 }
-
-typedef progress_callback = ffi.Pointer<
-    ffi.NativeFunction<
-        ffi.Void Function(ffi.Float progress, ffi.Pointer<ffi.Void> ctx)>>;
 
 /// model file types
 abstract class ftype {
@@ -1129,7 +1495,111 @@ abstract class ftype {
 
   /// except 1d tensors
   static const int FTYPE_MOSTLY_Q6_K = 18;
+
+  /// not specified in the model file
+  static const int FTYPE_GUESSED = 1024;
 }
+
+final class token_data extends ffi.Struct {
+  /// token id
+  @token()
+  external int id;
+
+  /// log-odds of the token
+  @ffi.Float()
+  external double logit;
+
+  /// probability of the token
+  @ffi.Float()
+  external double p;
+}
+
+typedef token = ffi.Int;
+
+final class token_data_array extends ffi.Struct {
+  external ffi.Pointer<token_data> data;
+
+  @ffi.Size()
+  external int size;
+
+  @ffi.Bool()
+  external bool sorted;
+}
+
+final class context_params extends ffi.Struct {
+  /// RNG seed, -1 for random
+  @ffi.Uint32()
+  external int seed;
+
+  /// text context
+  @ffi.Int32()
+  external int n_ctx;
+
+  /// prompt processing batch size
+  @ffi.Int32()
+  external int n_batch;
+
+  /// number of layers to store in VRAM
+  @ffi.Int32()
+  external int n_gpu_layers;
+
+  /// the GPU that is used for scratch and small tensors
+  @ffi.Int32()
+  external int main_gpu;
+
+  /// how to split layers across multiple GPUs (size: LLAMA_MAX_DEVICES)
+  external ffi.Pointer<ffi.Float> tensor_split;
+
+  /// RoPE base frequency
+  @ffi.Float()
+  external double rope_freq_base;
+
+  /// RoPE frequency scaling factor
+  @ffi.Float()
+  external double rope_freq_scale;
+
+  /// called with a progress value between 0 and 1, pass NULL to disable
+  external progress_callback progress_callback1;
+
+  /// context pointer passed to the progress callback
+  external ffi.Pointer<ffi.Void> progress_callback_user_data;
+
+  /// if true, reduce VRAM usage at the cost of performance
+  @ffi.Bool()
+  external bool low_vram;
+
+  /// if true, use experimental mul_mat_q kernels
+  @ffi.Bool()
+  external bool mul_mat_q;
+
+  /// use fp16 for KV cache
+  @ffi.Bool()
+  external bool f16_kv;
+
+  /// the llama_eval() call computes all logits, not just the last one
+  @ffi.Bool()
+  external bool logits_all;
+
+  /// only load the vocabulary, no weights
+  @ffi.Bool()
+  external bool vocab_only;
+
+  /// use mmap if possible
+  @ffi.Bool()
+  external bool use_mmap;
+
+  /// force system to keep model in RAM
+  @ffi.Bool()
+  external bool use_mlock;
+
+  /// embedding mode only
+  @ffi.Bool()
+  external bool embedding;
+}
+
+typedef progress_callback = ffi.Pointer<
+    ffi.NativeFunction<
+        ffi.Void Function(ffi.Float progress, ffi.Pointer<ffi.Void> ctx)>>;
 
 /// model quantization parameters
 final class model_quantize_params extends ffi.Struct {
@@ -1148,6 +1618,48 @@ final class model_quantize_params extends ffi.Struct {
   /// quantize output.weight
   @ffi.Bool()
   external bool quantize_output_tensor;
+
+  /// only copy tensors - ftype, allow_requantize and quantize_output_tensor are ignored
+  @ffi.Bool()
+  external bool only_copy;
+}
+
+/// grammar types
+final class grammar extends ffi.Opaque {}
+
+/// grammar element type
+abstract class gretype {
+  /// end of rule definition
+  static const int GRETYPE_END = 0;
+
+  /// start of alternate definition for rule
+  static const int GRETYPE_ALT = 1;
+
+  /// non-terminal element: reference to rule
+  static const int GRETYPE_RULE_REF = 2;
+
+  /// terminal element: character (code point)
+  static const int GRETYPE_CHAR = 3;
+
+  /// inverse char(s) ([^a], [^a-b] [^abc])
+  static const int GRETYPE_CHAR_NOT = 4;
+
+  /// modifies a preceding LLAMA_GRETYPE_CHAR or LLAMA_GRETYPE_CHAR_ALT to
+  /// be an inclusive range ([a-z])
+  static const int GRETYPE_CHAR_RNG_UPPER = 5;
+
+  /// modifies a preceding LLAMA_GRETYPE_CHAR or
+  /// LLAMA_GRETYPE_CHAR_RNG_UPPER to add an alternate char to match ([ab], [a-zA])
+  static const int GRETYPE_CHAR_ALT = 6;
+}
+
+final class grammar_element extends ffi.Struct {
+  @ffi.Int32()
+  external int type;
+
+  /// Unicode code point or rule ID
+  @ffi.Uint32()
+  external int value;
 }
 
 /// performance timing information
@@ -1180,26 +1692,146 @@ final class timings extends ffi.Struct {
   external int n_eval;
 }
 
+/// Beam search
+final class beam_view extends ffi.Struct {
+  external ffi.Pointer<token> tokens;
+
+  @ffi.Size()
+  external int n_tokens;
+
+  /// Cumulative beam probability (renormalized relative to all beams)
+  @ffi.Float()
+  external double p;
+
+  /// Callback should set this to true when a beam is at end-of-beam.
+  @ffi.Bool()
+  external bool eob;
+}
+
+/// Passed to beam_search_callback function.
+/// Whenever 0 < common_prefix_length, this number of tokens should be copied from any of the beams
+/// (e.g. beams[0]) as they will be removed (shifted) from all beams in all subsequent callbacks.
+/// These pointers are valid only during the synchronous callback, so should not be saved.
+final class beams_state extends ffi.Struct {
+  external ffi.Pointer<beam_view> beam_views;
+
+  /// Number of elements in beam_views[].
+  @ffi.Size()
+  external int n_beams;
+
+  /// Current max length of prefix tokens shared by all beams.
+  @ffi.Size()
+  external int common_prefix_length;
+
+  /// True iff this is the last callback invocation.
+  @ffi.Bool()
+  external bool last_call;
+}
+
+/// Type of pointer to the beam_search_callback function.
+/// void* callback_data is any custom data passed to llama_beam_search, that is subsequently
+/// passed back to beam_search_callback. This avoids having to use global variables in the callback.
+typedef beam_search_callback_fn_t = ffi.Pointer<
+    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>, beams_state)>>;
+
+/// Signature for logging events
+/// Note that text includes the new line character at the end for most events.
+/// If your logging mechanism cannot handle that, check if the last character is '\n' and strip it
+/// if it exists.
+/// It might not exist for progress report where '.' is output repeatedly.
+typedef log_callback = ffi.Pointer<
+    ffi.NativeFunction<
+        ffi.Void Function(ffi.Int32 level, ffi.Pointer<ffi.Char> text,
+            ffi.Pointer<ffi.Void> user_data)>>;
+typedef FILE = _IO_FILE;
+
+final class _IO_FILE extends ffi.Struct {
+  @ffi.Int()
+  external int _flags;
+
+  external ffi.Pointer<ffi.Char> _IO_read_ptr;
+
+  external ffi.Pointer<ffi.Char> _IO_read_end;
+
+  external ffi.Pointer<ffi.Char> _IO_read_base;
+
+  external ffi.Pointer<ffi.Char> _IO_write_base;
+
+  external ffi.Pointer<ffi.Char> _IO_write_ptr;
+
+  external ffi.Pointer<ffi.Char> _IO_write_end;
+
+  external ffi.Pointer<ffi.Char> _IO_buf_base;
+
+  external ffi.Pointer<ffi.Char> _IO_buf_end;
+
+  external ffi.Pointer<ffi.Char> _IO_save_base;
+
+  external ffi.Pointer<ffi.Char> _IO_backup_base;
+
+  external ffi.Pointer<ffi.Char> _IO_save_end;
+
+  external ffi.Pointer<_IO_marker> _markers;
+
+  external ffi.Pointer<_IO_FILE> _chain;
+
+  @ffi.Int()
+  external int _fileno;
+
+  @ffi.Int()
+  external int _flags2;
+
+  @__off_t()
+  external int _old_offset;
+
+  @ffi.UnsignedShort()
+  external int _cur_column;
+
+  @ffi.SignedChar()
+  external int _vtable_offset;
+
+  @ffi.Array.multi([1])
+  external ffi.Array<ffi.Char> _shortbuf;
+
+  external ffi.Pointer<_IO_lock_t> _lock;
+
+  @__off64_t()
+  external int _offset;
+
+  external ffi.Pointer<_IO_codecvt> _codecvt;
+
+  external ffi.Pointer<_IO_wide_data> _wide_data;
+
+  external ffi.Pointer<_IO_FILE> _freeres_list;
+
+  external ffi.Pointer<ffi.Void> _freeres_buf;
+
+  @ffi.Size()
+  external int __pad5;
+
+  @ffi.Int()
+  external int _mode;
+
+  @ffi.Array.multi([20])
+  external ffi.Array<ffi.Char> _unused2;
+}
+
+final class _IO_marker extends ffi.Opaque {}
+
+typedef __off_t = ffi.Long;
+typedef _IO_lock_t = ffi.Void;
+typedef __off64_t = ffi.Long;
+
+final class _IO_codecvt extends ffi.Opaque {}
+
+final class _IO_wide_data extends ffi.Opaque {}
+
 const int MAX_DEVICES = 1;
 
-const int FILE_MAGIC_GGJT = 1734830708;
-
-const int FILE_MAGIC_GGLA = 1734831201;
-
-const int FILE_MAGIC_GGMF = 1734831462;
-
-const int FILE_MAGIC_GGML = 1734831468;
+const int DEFAULT_SEED = 4294967295;
 
 const int FILE_MAGIC_GGSN = 1734833006;
-
-const int FILE_VERSION = 3;
-
-const int FILE_MAGIC = 1734830708;
-
-const int FILE_MAGIC_UNVERSIONED = 1734831468;
 
 const int SESSION_MAGIC = 1734833006;
 
 const int SESSION_VERSION = 1;
-
-const int DEFAULT_SEED = 4294967295;
