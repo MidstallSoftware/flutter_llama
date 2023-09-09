@@ -2,24 +2,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_llama/flutter_llama.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:network_file_cached/network_file_cached.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:xdg_directories/xdg_directories.dart' as xdg;
+import 'package:file_picker/file_picker.dart';
 
-void main() async {
-  switch (defaultTargetPlatform) {
-    case TargetPlatform.linux:
-      final dir = Directory('${xdg.cacheHome.path}/com.expidusos.flutter_llama_example');
-      if (!dir.existsSync()) await dir.create(recursive: true);
-      await Hive.initFlutter(dir.path);
-      break;
-    default:
-      await Hive.initFlutter((await getApplicationDocumentsDirectory()).path);
-      break;
-  }
-
-  await NetworkFileCached.init();
+void main() {
   runApp(const MyApp());
 }
 
@@ -34,24 +19,15 @@ class _MyAppState extends State<MyApp> {
   LlamaContext? _llama;
   String _modelProgressLabel = 'Downloading AI model';
   double? _modelProgress;
+  File? _file;
 
-  @override
-  void initState() {
-    super.initState();
-
-    NetworkFileCached.downloadFile(
-      'https://huggingface.co/TheBloke/Selfee-13B-GGML/resolve/main/selfee-13b.ggmlv3.q2_K.bin',
-      onReceiveProgress: (rcv, total) => setState(() {
-        _modelProgress = rcv / total;
-      })
-    ).then((file) {
-      setState(() {
-        _modelProgressLabel = 'Initializing AI';
-        _modelProgress = null;
-        LlamaContext.fromFile(file.path).then((value) => setState(() {
-          _llama = value;
-        }));
-      });
+  void _load() {
+    setState(() {
+      _modelProgressLabel = 'Initializing AI';
+      _modelProgress = null;
+      LlamaContext.fromFile(_file!.path).then((value) => setState(() {
+        _llama = value;
+      }));
     });
   }
 
@@ -70,14 +46,31 @@ class _MyAppState extends State<MyApp> {
           title: const Text('flutter_llama example'),
         ),
         body: Center(
-          child: _llama == null
-            ? Column(
-                children: [
-                  Text(_modelProgressLabel),
-                  CircularProgressIndicator(value: _modelProgress)
-                ],
-              )
-           : Container(),
+          child: Column(
+            children: [
+              ...(_llama == null ? [
+                Text(_modelProgressLabel),
+                CircularProgressIndicator(value: _modelProgress)
+              ] : []),
+              ...(_file == null ? [
+                TextButton(
+                  onPressed: () =>
+                    FilePicker.platform.pickFiles(
+                      type: FileType.custom,
+                      allowedExtensions: ['gguf'],
+                    ).then((result) {
+                      if (result != null) {
+                        _file = File(result!.files.single.path!);
+                        _load();
+                      }
+                    }),
+                  child: const Text('Select model')
+                ),
+              ] : [
+                Text('Using model ${_file!.path}'),
+              ]),
+            ],
+          ),
         ),
       ),
     );

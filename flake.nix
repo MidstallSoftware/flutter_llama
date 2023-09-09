@@ -31,6 +31,7 @@
               sentencepiece
               numpy
             ]))
+            gnome.zenity
           ];
         };
       });
